@@ -63,46 +63,46 @@ Add the example data located in the file: `data.json`
 
 After the data is on the server we can do a query to test the sorting over the `name_tibt` field:
 
-[ http://solr:8983/solr/tibetan_core/select?q=*:*&sort=name_tibt%20ASC ](http://solr:8983/solr/tibetan_core/select?q=*:*&sort=name_tibt%20ASC)
+[ http://localhost:8983/solr/tibetan_core/select?q=*:*&sort=name_tibt%20ASC ](http://localhost:8983/solr/tibetan_core/select?q=*:*&sort=name_tibt%20ASC)
 
 You should see the following order:
 
-```json
+```
 {
 responseHeader: {
 status: 0,
-QTime: 1,
-params: {
+        QTime: 1,
+        params: {
 q: "*:*",
-sort: "name_tibt ASC"
-}
-},
+   sort: "name_tibt ASC"
+        }
+                },
 response: {
 numFound: 4,
-start: 0,
-docs: [
-{
+          start: 0,
+          docs: [
+          {
 id: "2",
-uid: "2",
-name_tibt: "ཀ"
-},
-{
+    uid: "2",
+    name_tibt: "ཀ"
+          },
+          {
 id: "3",
-uid: "3",
-name_tibt: "དཀོན"
-},
-{
+    uid: "3",
+    name_tibt: "དཀོན"
+          },
+          {
 id: "4",
-uid: "4",
-name_tibt: "རྐ"
-},
-{
+    uid: "4",
+    name_tibt: "རྐ"
+          },
+          {
 id: "1",
-uid: "1",
-name_tibt: "ཆོས"
-}
-]
-}
+    uid: "1",
+    name_tibt: "ཆོས"
+          }
+          ]
+          }
 }
 ```
 
