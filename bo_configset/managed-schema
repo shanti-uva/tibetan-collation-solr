@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Solr managed schema - automatically generated - DO NOT EDIT -->
+<schema name="example-schemaless" version="1.5">
+  <uniqueKey>id</uniqueKey>
+  <fieldType name="text_bo" class="solr.ICUCollationField"
+    custom="bo_rules.dat"
+    strength="primary"
+    decomposition="canonical" />
+  <fieldType name="string" class="solr.StrField" sortMissingLast="true"/>
+  <fieldType name="long" class="solr.TrieLongField" positionIncrementGap="0" precisionStep="0"/>
+  <field name="_version_" type="long" indexed="true" stored="true"/>
+  <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true" docValues="true"/>
+  <field name="name_tibt" type="text_bo" multiValued="false" stored="true"/>
+  <field name="uid" type="string" multiValued="false" indexed="true" required="true" stored="true" docValues="true"/>
+  <copyField source="id" dest="uid"/>
+</schema>

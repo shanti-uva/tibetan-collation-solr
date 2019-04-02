@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<!-- 
+     For more details about configurations options that may appear in
+     this file, see http://wiki.apache.org/solr/SolrConfigXml. 
+-->
+<config>
+  <luceneMatchVersion>5.5</luceneMatchVersion>
+
+  <lib dir="../../../dist"/>
+  <lib dir="../../../contrib/analysis-extras/lib"/>
+  <lib dir="../../../contrib/analysis-extras/lucene-libs"/>
+
+  <schemaFactory class="ManagedIndexSchemaFactory">
+    <bool name="mutable">true</bool>
+    <str name="managedSchemaResourceName">managed-schema</str>
+  </schemaFactory>
+
+
+  <requestHandler name="/select" class="solr.SearchHandler">
+    <lst name="defaults">
+      <str name="echoParams">explicit</str>
+      <int name="rows">10</int>
+      <!-- <str name="df">text</str> -->
+    </lst>
+  </requestHandler>
+
+
+  <requestHandler name="/update" class="solr.UpdateRequestHandler">
+    <lst name="defaults">
+      <str name="update.chain">add-unknown-fields-to-the-schema</str>
+    </lst>
+  </requestHandler>
+
+  <requestHandler name="/update/json" class="solr.UpdateRequestHandler">
+    <lst name="defaults">
+      <str name="stream.contentType">application/json</str>
+      <str name="update.chain">add-unknown-fields-to-the-schema</str>
+    </lst>
+  </requestHandler>
+  <requestHandler name="/update/csv" class="solr.UpdateRequestHandler">
+    <lst name="defaults">
+      <str name="stream.contentType">application/csv</str>
+      <str name="update.chain">add-unknown-fields-to-the-schema</str>
+    </lst>
+  </requestHandler>
+
+
+
+
+
+  <searchComponent name="tvComponent" class="solr.TermVectorComponent"/>
+
+  <updateRequestProcessorChain name="add-unknown-fields-to-the-schema">
+    <!-- Ignore updates to generated field resulting from "copyField" -->
+    <processor class="solr.IgnoreFieldUpdateProcessorFactory">
+        <str name="fieldRegex">uid|ancestors|name|.*_autocomplete|text|name_zh|_version_|ancestor_ids_generic|ancestor_uids_generic|ancestor_id_path|header_s|level_i</str>
+    </processor>
+    <processor class="solr.RemoveBlankFieldUpdateProcessorFactory"/>
+    <processor class="solr.ParseBooleanFieldUpdateProcessorFactory"/>
+    <processor class="solr.ParseLongFieldUpdateProcessorFactory"/>
+    <processor class="solr.ParseDoubleFieldUpdateProcessorFactory"/>
+    <processor class="solr.ParseDateFieldUpdateProcessorFactory">
+      <arr name="format">
+        <str>yyyy-MM-dd'T'HH:mm:ss.SSSZ</str>
+        <str>yyyy-MM-dd'T'HH:mm:ss,SSSZ</str>
+        <str>yyyy-MM-dd'T'HH:mm:ss.SSS</str>
+        <str>yyyy-MM-dd'T'HH:mm:ss,SSS</str>
+        <str>yyyy-MM-dd'T'HH:mm:ssZ</str>
+        <str>yyyy-MM-dd'T'HH:mm:ss</str>
+        <str>yyyy-MM-dd'T'HH:mmZ</str>
+        <str>yyyy-MM-dd'T'HH:mm</str>
+        <str>yyyy-MM-dd HH:mm:ss.SSSZ</str>
+        <str>yyyy-MM-dd HH:mm:ss,SSSZ</str>
+        <str>yyyy-MM-dd HH:mm:ss.SSS</str>
+        <str>yyyy-MM-dd HH:mm:ss,SSS</str>
+        <str>yyyy-MM-dd HH:mm:ssZ</str>
+        <str>yyyy-MM-dd HH:mm:ss</str>
+        <str>yyyy-MM-dd HH:mmZ</str>
+        <str>yyyy-MM-dd HH:mm</str>
+        <str>yyyy-MM-dd</str>
+      </arr>
+    </processor>
+    <processor class="solr.AddSchemaFieldsUpdateProcessorFactory">
+      <str name="defaultFieldType">text_general</str>
+    </processor>
+
+    <!-- create generic ancestors field -->
+    <processor class='solr.CloneFieldUpdateProcessorFactory'>
+      <str name='source'>ancestors_default</str>
+      <str name='dest'>ancestors</str>
+    </processor>
+    <processor class='solr.CloneFieldUpdateProcessorFactory'>
+      <str name='source'>ancestors_pol.admin.hier</str>
+      <str name='dest'>ancestors</str>
+    </processor>
+    <processor class='solr.CloneFieldUpdateProcessorFactory'>
+      <str name='source'>ancestors_closest_pol.admin.hier</str>
+      <str name='dest'>ancestors</str>
+    </processor>
+    <processor class='solr.CloneFieldUpdateProcessorFactory'>
+      <str name='source'>ancestors_gen</str>
+      <str name='dest'>ancestors</str>
+    </processor>
+
+    <!-- create generic ancestor id field and path -->
+    <processor class='solr.CloneFieldUpdateProcessorFactory'>
+      <str name='source'>ancestor_ids_gen</str>
+      <str name='dest'>ancestor_ids_generic</str>
+    </processor>
+    <processor class='solr.CloneFieldUpdateProcessorFactory'>
+      <str name='source'>ancestor_uids_gen</str>
+      <str name='dest'>ancestor_uids_generic</str>
+    </processor>
+    <processor class='solr.CloneFieldUpdateProcessorFactory'>
+      <str name='source'>ancestor_ids_default</str>
+      <str name='dest'>ancestor_ids_generic</str>
+    </processor>
+    <processor class='solr.CloneFieldUpdateProcessorFactory'>
+      <str name='source'>ancestor_uids_default</str>
+      <str name='dest'>ancestor_uids_generic</str>
+    </processor>
+    <processor class='solr.CloneFieldUpdateProcessorFactory'>
+      <str name='source'>ancestor_ids_pol.admin.hier</str>
+      <str name='dest'>ancestor_ids_generic</str>
+    </processor>
+    <processor class='solr.CloneFieldUpdateProcessorFactory'>
+      <str name='source'>ancestor_uids_pol.admin.hier</str>
+      <str name='dest'>ancestor_uids_generic</str>
+    </processor>
+    <processor class='solr.CloneFieldUpdateProcessorFactory'>
+      <str name='source'>ancestor_ids_closest_pol.admin.hier</str>
+      <str name='dest'>ancestor_ids_generic</str>
+    </processor>
+    <processor class='solr.CloneFieldUpdateProcessorFactory'>
+      <str name='source'>ancestor_uids_closest_pol.admin.hier</str>
+      <str name='dest'>ancestor_uids_generic</str>
+    </processor>
+    <processor class='solr.CloneFieldUpdateProcessorFactory'>
+      <str name='source'>ancestor_ids_generic</str>
+      <str name='dest'>ancestor_id_path</str>
+    </processor>
+    <processor class='solr.ConcatFieldUpdateProcessorFactory'>
+      <str name='fieldName'>ancestor_id_path</str>
+      <str name='delimiter'>/</str>
+    </processor>
+
+    <!-- get term level -->
+    <processor class='solr.CloneFieldUpdateProcessorFactory'>
+      <str name='source'>ancestor_ids_gen</str>
+      <str name='dest'>level_i</str>
+    </processor>
+    <processor class='solr.CloneFieldUpdateProcessorFactory'>
+      <str name='source'>ancestor_ids_default</str>
+      <str name='dest'>level_i</str>
+    </processor>
+    <processor class='solr.CloneFieldUpdateProcessorFactory'>
+      <str name='source'>ancestor_ids_pol.admin.hier</str>
+      <str name='dest'>level_i</str>
+    </processor>
+    <processor class='solr.CountFieldValuesUpdateProcessorFactory'>
+      <str name='fieldName'>level_i</str>
+    </processor>
+
+   <!-- associated subject autocomplete faceting -->
+
+    <processor class="solr.LogUpdateProcessorFactory"/>
+    <processor class="solr.RunUpdateProcessorFactory"/>
+  </updateRequestProcessorChain>
+
+  <queryResponseWriter name="json" class="solr.JSONResponseWriter">
+    <str name="content-type">text/plain; charset=UTF-8</str>
+  </queryResponseWriter>
+
+
+  <!-- dataimport handler drc2r  -->
+  <requestHandler name="/dataimport" class="org.apache.solr.handler.dataimport.DataImportHandler">
+    <lst name="defaults">
+      <str name="config">data.json</str>
+      <str name="update.chain">add-unknown-fields-to-the-schema</str>
+    </lst>
+  </requestHandler>
+
+</config>

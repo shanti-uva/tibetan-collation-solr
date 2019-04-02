@@ -1,0 +1,3 @@
+# SHAD => TSEK 
+
+"\u0F0D" => "\u0F0B"
